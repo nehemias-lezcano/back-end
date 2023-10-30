@@ -5,9 +5,12 @@ import { engine } from "express-handlebars";
 import { __dirname } from "./utils.js";
 import { routerViews } from "./routes/views.router.js";
 import { Server } from "socket.io";
-import { ProductManager } from "../src/productManager.js";
+import { ProductManager } from "./dao/managerFileS/productManager.js";
+import { MessageManagerDB } from "./dao/managerDB/messagesManagerDB.js";
+import "./db/configDB.js"
 
 const productManager = new ProductManager();
+const messageManager = new MessageManagerDB();
 
 const app = express();
 app.use(express.json());
@@ -30,12 +33,18 @@ const httpServer = app.listen(8080, () => {
 
 const socketServer = new Server(httpServer);
 
+const messagesTotal = [];
+
 socketServer.on("connection", async (socket) => {
+
+  console.log("CLIENTE CONECTADO");
+
   const productosOld = await productManager.getProduct();
 
   socket.emit("productsInitial", productosOld);
 
   socket.on("addProduct", async (product) => {
+
     const producto = await productManager.addProduct(product);
 
     const productosActualizados = await productManager.getProduct();
@@ -54,8 +63,27 @@ socketServer.on("connection", async (socket) => {
 
     socket.emit("productDelete", productosActualizados);
 
-    
+
   });
 
 
+  //SERVER CHAT
+
+  socket.on("newUser", (nUser) => {
+
+    socket.broadcast.emit("userConnected", nUser)
+
+  })
+
+  socket.on("message", async (info) => {
+
+    messagesTotal.push(info);
+
+    const messageTotal = await messageManager.createOneMessage(info);
+
+    socketServer.emit("chatTotal", messagesTotal)
+
+  })
+
 });
+ 

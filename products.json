@@ -1,1 +1,68 @@
-[{"status":true,"title":"titulo1","description":"descripcion1","price":25,"code":"abc123","stock":10,"category":"AAA","thumbnails":"xxxx1","id":1},{"status":true,"title":"titulo2","description":"descripcion2","price":25,"code":"abc123","stock":10,"category":"AAA","thumbnails":"xxxx2","id":2},{"status":true,"title":"titulo3","description":"descripcion3","price":25,"code":"abc123","stock":10,"category":"AAA","thumbnails":"xxxx3","id":3},{"status":"","title":"titulo4","description":"descripcion4","price":"25","code":"abc123","stock":"3","category":"AAA","thumbnails":"xxxx4","id":4},{"status":true,"title":"titulo5","description":"descripcion5","price":25,"code":"abc123","stock":10,"category":"AAA","thumbnails":"xxxx5","id":5},{"status":"true","title":"titulo6","description":"descripcion6","price":"70","code":"abc123","stock":"3","category":"BBB","thumbnails":"xxxx6","id":6}]
+[
+  {
+    "status": true,
+    "title": "titulo1",
+    "description": "descripcion1",
+    "price": 25,
+    "code": "abc123",
+    "stock": 10,
+    "category": "AAA",
+    "thumbnails": "xxxx1",
+    "id": 1
+  },
+  {
+    "status": true,
+    "title": "titulo2",
+    "description": "descripcion2",
+    "price": 25,
+    "code": "abc123",
+    "stock": 10,
+    "category": "AAA",
+    "thumbnails": "xxxx2",
+    "id": 2
+  },
+  {
+    "status": true,
+    "title": "titulo3",
+    "description": "descripcion3",
+    "price": 25,
+    "code": "abc123",
+    "stock": 10,
+    "category": "AAA",
+    "thumbnails": "xxxx3",
+    "id": 3
+  },
+  {
+    "status": "",
+    "title": "titulo4",
+    "description": "descripcion4",
+    "price": "25",
+    "code": "abc123",
+    "stock": "3",
+    "category": "AAA",
+    "thumbnails": "xxxx4",
+    "id": 4
+  },
+  {
+    "status": true,
+    "title": "titulo5",
+    "description": "descripcion5",
+    "price": 25,
+    "code": "abc123",
+    "stock": 10,
+    "category": "AAA",
+    "thumbnails": "xxxx5",
+    "id": 5
+  },
+  {
+    "status": "true",
+    "title": "titulo6",
+    "description": "descripcion6",
+    "price": "70",
+    "code": "abc123",
+    "stock": "3",
+    "category": "BBB",
+    "thumbnails": "xxxx6",
+    "id": 6
+  }
+]
