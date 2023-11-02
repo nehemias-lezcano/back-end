@@ -134,6 +134,103 @@ routerCart.post("/:idCart/products/:idProduct", async (req, res) => {
   }
 });
 
+
+//NUEVO
+
+routerCart.put("/:idCart", async (req, res) => {
+
+  const { idCart } = req.params;
+  const { newProducts } = req.body;
+
+  console.log(newProducts);
+
+  try {
+    const response = await cartManagerBD.updateCart(idCart, newProducts);
+
+    if (!response) {
+      return res.status(404).json({ message: "cart not found" });
+    }
+
+    res.status(200).json({ message: "product update in cart" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+routerCart.put("/:idCart/products/:idProduct", async (req, res) => {
+
+  const { idCart, idProduct } = req.params;
+  const { quantity } = req.body;
+
+
+  try {
+    const response = await cartManagerBD.addProductToCartQuantity(idCart, idProduct, quantity);
+
+    if (!response) {
+      return res.status(404).json({ message: "cart not found" });
+    }
+
+    res.status(200).json({ message: "quantity update in cart" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+/*BORRAR EL CARRITO COMPLETO
+routerCart.delete("/:idCart", async (req, res) => {
+
+  const { idCart} = req.params;
+
+  try {
+    const response = await cartManagerBD.deleteCartById(idCart);
+
+    if (!response) {
+      return res.status(404).json({ message: "cart not found" });
+    }
+
+    res.status(200).json({ message: "cart delete" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+*/
+
+routerCart.delete("/:idCart", async (req, res) => {
+
+  const { idCart } = req.params;
+
+  try {
+    const response = await cartManagerBD.deleteTotalProductToCart(idCart);
+
+    if (!response) {
+      return res.status(404).json({ message: "cart not found" });
+    }
+
+    res.status(200).json({ message: "product total delete in cart" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+routerCart.delete("/:idCart/products/:idProduct", async (req, res) => {
+
+  const { idCart, idProduct } = req.params;
+
+  try {
+    const response = await cartManagerBD.deleteProductToCart(idCart, idProduct);
+
+    if (!response) {
+      return res.status(404).json({ message: "product not found" });
+    }
+
+    res.status(200).json({ message: "User update IN CADR" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 export { routerCart };
 
 //653b11f7f4fb2fc0b83af757/products/6539b0275e3d00bf535dd2cf

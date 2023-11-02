@@ -7,10 +7,13 @@ import { routerViews } from "./routes/views.router.js";
 import { Server } from "socket.io";
 import { ProductManager } from "./dao/managerFileS/productManager.js";
 import { MessageManagerDB } from "./dao/managerDB/messagesManagerDB.js";
+import { ProductManagerDB  } from "./dao/managerDB/productManagerDB.js";
 import "./db/configDB.js"
 
 const productManager = new ProductManager();
 const messageManager = new MessageManagerDB();
+
+const productManagerDB = new ProductManagerDB ();
 
 const app = express();
 app.use(express.json());
@@ -85,5 +88,10 @@ socketServer.on("connection", async (socket) => {
 
   })
 
+
+
+  
+
 });
  
+
