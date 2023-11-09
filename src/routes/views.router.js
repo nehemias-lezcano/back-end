@@ -5,7 +5,6 @@ import { CartManagerDB  } from "../dao/managerDB/cartsManagerDB.js";
 
 const productManagerDB = new ProductManagerDB();
 const cartManagerDB = new CartManagerDB();
-
 const productManager = new ProductManager();
 const routerViews = Router();
 
@@ -29,6 +28,12 @@ routerViews.get("/chat", async (req, res) => {
 
 routerViews.get("/products", async (req, res) => {
 
+  if (!req.session.user) {
+
+    return res.redirect("/api/views/login")
+    
+  }
+
   let products = await productManagerDB.findAll(req.query)
 
   let productsDB = products.payload
@@ -36,28 +41,20 @@ routerViews.get("/products", async (req, res) => {
   const productsObject = productsDB.map(p => p.toObject());
 
   res.render("products", {
-    productsData: productsObject
+    productsData: productsObject,
+    user: req.session.user
   });
 
-  //console.log(productsDB.payload);
-  /*
-  res.render("products", {
-    productsData: productsDB,
-  });
 
-  */
 });
 
 routerViews.get("/carts/:cartId", async (req, res) => {
 
   const {cartId} = req.params
 
-  
   let cartById = await cartManagerDB.findCartById(cartId);
 
     let cartArray=   cartById.products;
-
-    
 
   const cartArrayObject = cartArray.map(doc => doc.toObject());
 
@@ -67,8 +64,39 @@ routerViews.get("/carts/:cartId", async (req, res) => {
     cartData: cartArrayObject
   });
 
+});
+
+
+
+routerViews.get("/login", async (req, res) => {
+
+  if (req.session.user) {
+
+    return res.redirect("/api/views/products")
+    
+  }
+
+  res.render("login")
 
 });
 
+
+routerViews.get("/signup", async (req, res) => {
+
+  if (req.session.user) {
+
+    return res.redirect("/api/views/products")
+    
+  }
+
+  res.render("signup")
+
+});
+
+routerViews.get("/profile", async (req, res) => {
+
+  res.render("profile")
+
+});
 
 export { routerViews };

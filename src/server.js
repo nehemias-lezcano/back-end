@@ -1,6 +1,7 @@
 import express from "express";
 import { routerProduct } from "./routes/products.router.js";
 import { routerCart } from "./routes/cart.router.js";
+import { routerSessions  } from "./routes/sessions.router.js";
 import { engine } from "express-handlebars";
 import { __dirname } from "./utils.js";
 import { routerViews } from "./routes/views.router.js";
@@ -8,27 +9,43 @@ import { Server } from "socket.io";
 import { ProductManager } from "./dao/managerFileS/productManager.js";
 import { MessageManagerDB } from "./dao/managerDB/messagesManagerDB.js";
 import { ProductManagerDB  } from "./dao/managerDB/productManagerDB.js";
+import  MongoStore  from "connect-mongo";
+import  cookieParser  from "cookie-parser";
+import session from "express-session";
 import "./db/configDB.js"
 
 const productManager = new ProductManager();
 const messageManager = new MessageManagerDB();
-
 const productManagerDB = new ProductManagerDB ();
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
+app.use(cookieParser());
+
+
+const URI = 'mongodb+srv://indiradamico22:elamoresdedos@cluster0.n1eqmw8.mongodb.net/ecommerce?retryWrites=true&w=majority';
+
+app.use(session({ 
+
+  store: new MongoStore({mongoUrl: URI}),
+  secret: 'secretSession', 
+  cookie: { maxAge: 60000 }
+
+}))
 
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/views");
 
+
 app.use("/api/products", routerProduct);
-
 app.use("/api/carts", routerCart);
-
 app.use("/api/views", routerViews);
+app.use("/api/sessions", routerSessions);
+
+
 
 const httpServer = app.listen(8080, () => {
   console.log("LEYENDO PUERTO 8080");
@@ -88,9 +105,6 @@ socketServer.on("connection", async (socket) => {
 
   })
 
-
-
-  
 
 });
  
