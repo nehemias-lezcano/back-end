@@ -13,6 +13,8 @@ import  MongoStore  from "connect-mongo";
 import  cookieParser  from "cookie-parser";
 import session from "express-session";
 import "./db/configDB.js"
+import "./passport.js"
+import passport from "passport";
 
 const productManager = new ProductManager();
 const messageManager = new MessageManagerDB();
@@ -34,6 +36,9 @@ app.use(session({
   cookie: { maxAge: 60000 }
 
 }))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
