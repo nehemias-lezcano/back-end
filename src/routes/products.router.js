@@ -1,173 +1,117 @@
-import { Router } from "express";
-import { ProductManager } from "../dao/managerFileS/productManager.js";
-import { ProductManagerDB } from "../dao/managerDB/productManagerDB.js";
-
-const routerProduct = Router();
-const productManager = new ProductManager();
-const productManagerDB = new ProductManagerDB();
+const { Router} =  require('express')
+const ProductManager = require ('../DAO/db/products.Manager.Mongo')
+const { query, validationResult } = require('express-validator');
 
 
-/* FILE SYSTEM
 
-routerProduct.get("/", async (req, res) => {
-  const { limit } = req.query;
 
-  try {
-    let products = await productManager.getProduct();
+const router = Router();
+const products = new ProductManager()
 
-    if (limit) {
-      let productsLimitados = products.slice(0, +limit);
+//-----------------GET------------------------------------------
+router.get('/',[
+    query('limit').optional().isInt().toInt().isInt({ min: 1 }).isInt({ max: 100 }),
+    query('page').optional().isInt().toInt().isInt({ min: 1 }).isInt({ max: 100 }),
+    query('priceSort').optional().isIn(['asc', 'desc']),
+    query('category').optional(),
+    query('availability').optional()
+    ],async (req,res)=>{
+    try{
+        const errors = validationResult(req);
+        //Si hay errores, devuelve un error 400 con los errores
+        if (!errors.isEmpty()) {
+            return res.status(400).send({message: 'Error en los parametros de entrada', errors});
+        }
 
-      res.status(200).json({ message: "product found", productsLimitados });
-    } else {
-      res.status(200).json({ message: "product total", products });
+        //Si no hay errores, se ejecuta la consulta
+        const {limit = 10, page = 1, priceSort = null, category = null, availability = null} = req.query
+        //Se crea un objeto con los filtros
+        const filter = {}
+        if(category) {
+            filter.category = category
+        }
+        if(availability) {
+            filter.status = availability
+        }
+        //Se crea un objeto con los ordenamientos
+        let sort = null
+
+        if(priceSort==='asc'){
+            sort = {price: 1}
+        }
+        if(priceSort==='desc'){
+            sort = {price: -1}
+        }
+        //Se ejecuta la consulta
+        const productList = await products.getProducts(limit, page, sort, filter)
+        //Si devuelve falso, hay algón problema con la consulta
+        if(!productList) return res.status(404).send('No se encuentran productos en la base de datos')
+        //Si devuelve verdadero, Se envía el producto encontrado como respuesta al cliente
+        res.status(200).send (productList)  
+
+    } catch(error){
+        res.status(400).send({status:'Router error', error})
     }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+})
 
-routerProduct.get("/:pid", async (req, res) => {
-  const { pid } = req.params;
-
-  try {
-    let productoFiltrado = await productManager.getProductById(+pid);
-
-    if (!productoFiltrado) {
-      res.status(404).json({ message: "product not found" });
-    } else {
-      res.status(200).json({ message: "product found", productoFiltrado });
+router.get('/:pid', async (req,res)=>{
+    try{
+        const {pid} = req.params
+        const productList = await products.getProductById(pid)
+        //Si devuelve falso, hay algón problema con el Id
+        if(!productList) return res.status(404).send('Error: no se encuentra ese Id')
+        //Si devuelve verdadero, se ha encontrado el producto
+        res.status(200).send ({status:'success', payload:productList})
+        
+    } catch(error){
+        res.status(400).send({status:'Router error', error})
     }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+})
 
-routerProduct.post("/", async (req, res) => {
-  const { title, description, price, code, stock, category } = req.body;
+//---------------------POST----------------------------------------------
+router.post('/', async (req, res)=> {
+    try{
+        const toAddProduct = req.body
+        
+        const respuesta = await products.addProduct(toAddProduct)
+        
+        //Si devuelve falso, hay algún problema con el producto
+        if(!respuesta.success) {return res.status(400).send(respuesta)}
 
-  if (!title || !description || !price || !code || !stock || !category) {
-    return res.status(400).json({ message: "Some data is missing" });
-  }
+        //Si devuelve verdadero, se ha creado el nuevo producto
+        res.status(200).send(respuesta)
 
-  try {
-    let response = await productManager.addProduct(req.body);
-    res.json({ message: "product created", response });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-routerProduct.delete("/:pid", async (req, res) => {
-  const { pid } = req.params;
-
-  try {
-    let response = await productManager.deleteProductById(+pid);
-
-    if (!response) {
-      return res.status(404).json({ message: "product not found" });
-    }
-
-    res.status(200).json({ message: "User delete" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-routerProduct.put("/:pid", async (req, res) => {
-  const { pid } = req.params;
-
-  try {
-    const response = await productManager.updateProduct(+pid, req.body);
-
-    if (!response) {
-      return res.status(404).json({ message: "product not found" });
-    }
-
-    res.status(200).json({ message: "User update" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-*/
-
-//Nuevo DB
-
-routerProduct.get("/", async (req, res) => {
-
-  try {
-    const products = await productManagerDB.findAll(req.query)
-
-    res.status(200).json({ message: "product total", products });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-
-routerProduct.get("/:pid", async (req, res) => {
-  
-  const { pid } = req.params;
-
-  try {
-    let productoFiltrado = await productManagerDB.findById(pid);
-
-    if (!productoFiltrado) {
-      res.status(404).json({ message: "product not found" });
-    } else {
-      res.status(200).json({ message: "product found", productoFiltrado });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-routerProduct.post("/", async (req, res) => {
-
-  try {
-    const createProduct = await productManagerDB.createOne(req.body);
-    res.status(200).json({ message: "product creado", product: createProduct });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-
-routerProduct.put("/:pid", async (req, res) => {
-
-  const { pid } = req.params;
-
-  try {
-    const response = await productManagerDB.updateOne(pid, req.body);
-
-    if (!response) {
-      return res.status(404).json({ message: "product not found" });
+    } catch (error) {
+        res.status(400).send({status:'Router error', error})
     }
 
-    res.status(200).json({ message: "User update" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+})
+//----------------------PUT--------------------------------------
+router.put('/:pid', async (req , res)=>{
+    const {pid} = req.params
+    const toChangeProduct = req.body
 
-routerProduct.delete("/:pid", async (req, res) => {
+    const updatedProduct = await products.updateProduct(pid, toChangeProduct)
 
-  const { pid } = req.params;
-
-  try {
-    let response = await productManagerDB.deleteOne(pid);
-
-    if (!response) {
-      return res.status(404).json({ message: "product not found" });
+    //Sí devuelve falso, hay algún problema con la actualización
+    if(!updatedProduct.success) {
+        return res.status(400).send(updatedProduct)
     }
+    //Si devuelve verdadero, quiere decir que se hizo la actualización
+    res.status(200).send(updatedProduct)
 
-    res.status(200).json({ message: "User delete" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+})
 
-export { routerProduct };
+//---------------------DELETE-----------------------------------------
+router.delete('/:pid', async (req,res)=>{
+    const {pid} = req.params
+    const deletedProduct = await products.deleteProduct(pid)
+    //Sí devuelve falso, hay algún problema con el borrado
+    if(!deletedProduct.success){
+        return res.status(400).send(deletedProduct)
+    }
+    //Si devuelve verdadero, quiere decir que se borró el producto
+    res.status(200).send(deletedProduct)
+})
+
+module.exports = router

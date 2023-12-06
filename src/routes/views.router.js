@@ -1,146 +1,108 @@
-import { Router } from "express";
-import { ProductManager } from "../dao/managerFileS/productManager.js";
-import { ProductManagerDB } from "../dao/managerDB/productManagerDB.js";
-import { CartManagerDB } from "../dao/managerDB/cartsManagerDB.js";
-
-const productManagerDB = new ProductManagerDB();
-const cartManagerDB = new CartManagerDB();
-const productManager = new ProductManager();
-const routerViews = Router();
-
-routerViews.get("/", async (req, res) => {
-  let products = await productManager.getProduct();
-
-  res.render("home", {
-    products: products,
-  });
-});
-
-routerViews.get("/realtimeproducts", async (req, res) => {
-  res.render("realTimeProducts");
-});
-
-
-routerViews.get("/chat", async (req, res) => {
-  res.render("chat");
-});
-
-/*
-routerViews.get("/products", async (req, res) => {
-
-  if (!req.session.user) {
-
-    return res.redirect("/api/views/login")
-    
-  }
-
-  let products = await productManagerDB.findAll(req.query)
-
-  let productsDB = products.payload
-
-  const productsObject = productsDB.map(p => p.toObject());
-
-  res.render("products", {
-    productsData: productsObject,
-    user: req.session.user
-  });
-
-
-});
-*/
-routerViews.get("/products", async (req, res) => {
-
-  if (!req.session.passport) {
-
-    return res.redirect("/api/views/login")
-
-  }
-
-  let products = await productManagerDB.findAll(req.query)
-
-  let productsDB = products.payload
-
-  const productsObject = productsDB.map(p => p.toObject());
-
-  const { name } = req.user
-
-
-  res.render("products", {
-    productsData: productsObject,
-    user: { name },
-    style: "product"
-  });
-
-
-});
-
-routerViews.get("/carts/:cartId", async (req, res) => {
-
-  const { cartId } = req.params
-
-  let cartById = await cartManagerDB.findCartById(cartId);
-
-  let cartArray = cartById.products;
-
-  const cartArrayObject = cartArray.map(doc => doc.toObject());
-
-  console.log(cartArrayObject);
-
-  res.render("cart", {
-    cartData: cartArrayObject
-  });
-
-});
+const {Router} = require('express')
+const ProductManagerMongo = require('../DAO/db/products.Manager.Mongo')
+const {cartsManagerMongo} = require ('../DAO/db/carts.Manager.Mongo')
+const { query, validationResult } = require('express-validator');
+const {userModel} = require('../DAO/db/models/user.model')
 
 
 
-routerViews.get("/login", async (req, res) => {
-
-  // console.log(req);
-
-  if (req.session.user) {
-
-    return res.redirect("/api/views/products")
-
-  }
-
-  res.render("login")
-
-});
+const router = Router();
+const products = new ProductManagerMongo ()
+const carts = new cartsManagerMongo ()
 
 
-routerViews.get("/signup", async (req, res) => {
-
-  if (req.session.user) {
-
-    return res.redirect("/api/views/products")
-
-  }
-
-  res.render("signup")
-
-});
-
-routerViews.get("/profile", async (req, res) => {
-
-  res.render("profile")
-
-});
-
-routerViews.get("/restaurarPassword", async (req, res) => {
-
-  res.render("restaurarPassword")
 
 
-});
 
-routerViews.get('/error', async (req, res) => {
+//GET
+//Vista Products
+router.get('/products',[
+    query('limit').optional().isInt().toInt().isInt({ min: 1 }).isInt({ max: 100 }),
+    query('page').optional().isInt().toInt().isInt({ min: 1 }).isInt({ max: 100 }),
+    query('priceSort').optional().isIn(['asc', 'desc']),
+    query('category').optional(),
+    query('availability').optional()
+    ] ,async (req,res)=>{
+        // Verificar si el usuario ha iniciado sesión
+        let user = req.session.passport
+        if (!user) {
+        // Redirigir al usuario a la página de inicio de sesión si no está autenticado
+            return res.redirect('/');
+        }
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).send({message: 'Error en los parametros de entrada', errors});
+        }
+        const {limit = 10, page = 1, priceSort = null, category = null, availability = null} = req.query
+        
+        const filter = {}
+        if(category) {
+            filter.category = category
+        }
+        if(availability) {
+            filter.availability = availability
+        }
 
-  //console.log(req);
+        let sort = null
 
- let message = req.session.messages[0]
+        if(priceSort==='asc'){
+            sort = {price: 1}
+        }
+        if(priceSort==='desc'){
+            sort = {price: -1}
+        }
 
-  res.render("error", { message })
+        let productList = await products.getProducts(limit, page, sort, filter)
+        
+        user = await userModel.findById(req.session.passport.user).lean()
+
+        let data = {
+            dataProducts: productList,
+            dataUser: user,
+            style: 'home.css'
+        }
+
+        res.render('products',data)
+    })
+
+//Vista Cart
+router.get('/carts/:cid', async (req,res)=>{
+    let {cid} = req.params
+    let cart = await carts.getCartById(cid)
+    let data = {
+        dataCart: cart
+    }
+    res.render('cart',data)
 })
 
-export { routerViews };
+//Vista realTimeProducts
+router.get('/realtimeproducts', async (req,res)=>{
+    let limit = req.query.limit
+    let productList = await products.getProducts(limit)
+    res.render ('realTimeProducts',productList)
+})
+
+//Vista chat
+router.get('/chat', (req,res)=>{
+    
+    res.render('chat',{})
+    })
+    
+
+//Vista login
+router.get('/', async (req,res)=>{
+    res.render('login',{
+        style: 'home.css'
+    })
+})
+
+//Vista register
+router.get('/register', async (req,res)=>{
+    res.render('register',{
+        style: 'home.css'
+    })
+})
+
+
+
+module.exports = router;

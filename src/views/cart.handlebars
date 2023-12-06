@@ -1,9 +1,12 @@
-{{#each cartData}}
-  <h2>{{product.title}}</h2>
-  <p>description:{{product.description}}</p>
-  <p> $:{{product.price}}</p>
-  <p> code:{{code}}</p>
-  <p> {{thumbnails}}</p>
-  <p> ID:{{product._id}}</p>
-  <p> quantity:{{quantity}}</p>
-{{/each}}
+<div class="container text-center">
+    <h1>Carrito ID: {{dataCart.payload._id}}</h1>
+    <div class="container">
+            {{#each dataCart.payload.products}}
+            <div class="border">
+                <p>Producto: {{this.product.title}}</p>
+                <p>Precio:${{this.product.price}}</p>
+                <p>Cantidad: {{this.quantity}}</p>
+            </div>
+            {{/each}}
+    </div>
+</div>
