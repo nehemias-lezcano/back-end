@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nehemias-lezcano/back3.git"
+    "url": "git+https://github.com/nehemias-lezcano/back-end"
   },
   "keywords": [],
   "author": "Nehemias lezcano",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nehemias-lezcano/back3.git/issues"
+    "url": "https://github.com/nehemias-lezcano/back-end.git/issues"
   },
-  "homepage": "https://github.com/nehemias-lezcano/back3.git#readme",
+  "homepage": "https://github.com/nehemias-lezcano/back-end.git#readme",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "connect-mongo": "^5.0.0",
