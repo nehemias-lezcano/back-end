@@ -1,4 +1,3 @@
-const { isValidPassword } = require('../../utils/bcryptHash')
 const {userModel} = require('./models/user.model')
 
 class UsersManagerMongo {
@@ -8,7 +7,7 @@ class UsersManagerMongo {
         try {
             
             //Validamos que el usuario tenga todas sus propiedades
-            if (!user.email || !user.password || !user.first_name || !user.last_name) {
+            if (!user.email || !user.password || !user.first_name || !user.last_name || !user.age) {
                 const respuesta = {
                     status: 'error',
                     message: 'Faltan datos',
@@ -17,16 +16,7 @@ class UsersManagerMongo {
                 return respuesta
             } 
             
-            //Validamos que el usuario no exista
-            const userExist = await userModel.findOne({email: user.email})
-            if (userExist) {
-                const respuesta = {
-                    status: 'error',
-                    message: 'El usuario ya existe',
-                    success: false
-                }
-                return respuesta
-            }
+            
             
             //Si email es igual adminCoder@coder.com y contraseña es igual a adminCod3r123
             //El usuario es administrador
@@ -46,26 +36,16 @@ class UsersManagerMongo {
             console.log(newUser)
             await newUser.save()
 
-            const respuesta = {
-                status: 'success',
-                message: 'Usuario creado correctamente',
-                payload: newUser,
-                success: true
-            }
-
-            return respuesta
-    
-    
-           
+            return newUser
         } catch (error) {
 
             throw new Error(error)
         }
     }
 
-    async findUserByEmail (email) {
+    async getUserByEmail (email) {
         try {
-            const user = await userModel.findOne({email: email})
+            const user = await userModel.findOne({email: email}).lean()
             return user
 
         }
@@ -74,18 +54,7 @@ class UsersManagerMongo {
         }
     } 
 
-    async authenticateUser (email, password) {
-        const user =  await this.findUserByEmail(email)
-        if(!user){
-            return res.status(401).send({ message: 'Credenciales inválidas' });
-        }
-         // Verificar la contraseña
-        if (!isValidPassword(password, user)) {
-            return res.status(401).send({ message: 'Credenciales inválidas' });
-        }
-        return user
-        
-    }
+    
 }
 
 module.exports = {UsersManagerMongo}

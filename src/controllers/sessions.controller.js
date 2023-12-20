@@ -1,60 +1,68 @@
-const {generateToken} = require('../utils/generateTokenJWT')
-const {UsersManagerMongo} = require('../DAO/db/users.Manager.Mongo')
-const {createHash, isValidPassword} = require('../utils/bcryptHash')
-const {userModel} = require('../DAO/db/models/user.model')
-const {cartsManagerMongo}  = require('../DAO/db/carts.Manager.Mongo')
+const UserDTO = require('../DTO/user.dto')
+const { usersService } = require("../service");
+const { generateToken } = require('../utils/generateTokenJWT')
 
-const carts = new cartsManagerMongo()
-const users = new UsersManagerMongo()
 
 class  SessionController {
     constructor() {}
 
-
     login = async (req, res) =>{   
-            const { email, password } = req.body
-            if(email === 'adminCoder@coder.com' || password === 'adminCod3r123') {
-                const user = {first_name: 'Admin', last_name: 'Coder', email: 'adminCoder@coder.com', age: '99', password: 'adminCod3r123', role:'admin'}
-                const token = generateToken(user)
-                res.cookie('cookieToken',token,{"maxAge": 3600000, httpOnly: true}).send({status: 'success', token})
+            if (req.user){
+                const token = generateToken(req.user)
+                res.cookie('cookieToken',token,{
+                    "maxAge": 3600000,
+                    httpOnly: true
+                }).send({status: 'success', token})
+                return
             }
-            const user = await userModel.findOne({email: email}).lean()
-            console.log(user)
-            if (!user) {
-                res.status(400).send({message: 'Usuario no encontrado'})
-            }
-            console.log(user)
-            if (!isValidPassword(password, user.password)) {
-                res.status(400).send({message: 'Contraseña incorrecta'})
-            }
-            const token = generateToken(user)
-            res.cookie('cookieToken',token,{"maxAge": 3600000, httpOnly: true}).send({status: 'success', token})
+            res.status(401).send({message: 'Usuario no autorizado'})
         }
-        
-        
-        
         
     register = async (req, res) => {
-            const {first_name, last_name, email, age, password} = req.body
-            let user = await userModel.findOne({email: email})
-            if (user) {
-                res.status(400).send({message: 'El usuario ya existe'})
+            if (req.user) {
+            res.status(201).send(req.user)
             }
-            user = {
-                first_name,
-                last_name,
-                email,
-                age,
-                password: createHash(password),
-                cart: await carts.addCart()
-            }
-            console.log(user)
-            const newUser = await userModel.create(user)
-            res.status(201).send(newUser)
-
         }
+    
+    gitHubCallBack = async (req, res)=>{
+        if (req.user) {
+            console.log('req.user', req.user)
+            const token = generateToken(req.user)
+            res.cookie('cookieToken', token, { 
+                maxAge: 3600000,
+                httpOnly: true,
+        })
+    }
+        console.log('Login exitoso')
+        res.redirect('/products')
+    }
+
+    logout = async (req, res) => {
+        // Eliminar la cookie que contiene el token
+        res.clearCookie('cookieToken', { expires: new Date(0)} ).redirect('/')
+    }
+
+    failLogin = async (req, res) => {
+        console.log('Login fallido')
+        res.send({ status: 'error', error: 'Login fallido' })
+    }
+
+    failRegister = async (req, res) => {
+        console.log('Registro fallido')
+        res.send({status: 'error', error: 'Registro fallido'})
+    }
+
+    toUser = async (req, res) => {
+        let user = await usersService.findUserByEmail(req.user.email)
+        const userDTO = new UserDTO(user)
+        console.log('userDTO', userDTO)
+        let toUser = userDTO.toUser()
+        res.send(toUser)
+    }
 
     }
+
+
 
 
 
