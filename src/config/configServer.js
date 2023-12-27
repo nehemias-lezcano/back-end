@@ -1,10 +1,7 @@
-const{connect} = require ('mongoose')
+const { MongoSingleton } = require('./singletone')
 require('dotenv').config()
 
 module.exports = {
     privateKey: process.env.JWT_SECRET_KEY,
-    connectDB: ()=>{
-        connect(process.env.MONGO_URL)
-        console.log('Database connected')
-    }
+    connectDB: async ()=> await MongoSingleton.getInstance()
 }

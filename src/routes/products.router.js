@@ -1,7 +1,9 @@
 const { Router} =  require('express')
 const { query } = require('express-validator');
-const { getProducts, getProductsById, addProduct, updateProduct, deleteProduct } = require('../controllers/products.controller');
-
+const { getAll, getById, create, update, deleteProduct  } = require('../controllers/products.controller');
+const { authorization } = require('../config/passport.JWT/passport.authorization');
+const { passportAuth } = require('../config/passport.JWT/passport.auth');
+const { checkProductOwnerOrAdmin } = require('../middlewares/checkProductOwnerOrAdmin.middleware.js')
 
 
 
@@ -15,17 +17,32 @@ router.get('/',[
     query('priceSort').optional().isIn(['asc', 'desc']),
     query('category').optional(),
     query('availability').optional()
-    ], getProducts)
+    ], getAll)
 
 
-router.get('/:pid', getProductsById)
+router.get('/:pid', getById)
 
 //---------------------POST----------------------------------------------
-router.post('/', addProduct)
+router.post('/', 
+    passportAuth('jwt', {session: false}),
+    authorization(['admin','premium']),
+    create
+    )
 //----------------------PUT--------------------------------------
-router.put('/:pid', updateProduct)
+router.put('/:pid',
+    passportAuth('jwt', {session: false}),
+    authorization(['admin','premium']),
+    checkProductOwnerOrAdmin,
+    update,
+    )
 
 //---------------------DELETE-----------------------------------------
-router.delete('/:pid', deleteProduct)
+router.delete('/:pid',
+    passportAuth('jwt', {session: false}), 
+    authorization(['admin','premium']),
+    checkProductOwnerOrAdmin,
+    deleteProduct,
+    
+    )
 
 module.exports = router

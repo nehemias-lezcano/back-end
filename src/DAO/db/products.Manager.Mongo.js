@@ -1,5 +1,11 @@
-const EventEmitter = require('events');
+const EventEmitter = require('events')
 const {productModel} = require('./models/product.model')
+const { CustomError } = require('../../utils/CustomError/CustomError')
+const { getProductsInfo, createProductErrorInfo, findProductErrorInfo, productExistErrorInfo, productUpdateErrorInfo } = require('../../utils/CustomError/info');
+const { EError } = require('../../utils/CustomError/EErrors')
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
+
 
 class ProductManagerMongo {
     constructor() {
@@ -10,17 +16,26 @@ class ProductManagerMongo {
 //-------------GET PRODUCTS----------------
     async getAll(limit, page, sort, query) {
         try {
-            const products = await productModel.paginate(query, {limit, page, sort, lean:true})
-            //Validamos que el producto exista
-            if(products.docs.length === 0) {
-                return {
-                    status: 'error',
-                    message: 'No se encontraron productos',
-                    success: false
-                }
+            console.log('limit',limit)
+            console.log('page',page)
+            console.log('sort',sort)
+            console.log('query',query)
+            //Creamos la query para la paginación
+            const products = await productModel.paginate(
+                query, {limit, page, sort, lean:true}
+                )
+            
+            console.log('products', products)
+            //Validamos haya productos
+            if(products.totalDocs === 0) {
+                CustomError.createError({
+                    name: 'No Products Found',
+                    cause: getProductsInfo(),
+                    message: 'There is no products',
+                    code: EError.NOT_FOUND
+                })
             }
             const {docs, totalPages, prevPage, nextPage, hasPrevPage, hasNextPage, totalDocs} = products
-            console.log(query)
 
             //Creamos las urls para la paginación
             const prevLink = hasPrevPage ? `http://localhost:8080/products?limit=${limit}&page=${prevPage}` : null
@@ -46,28 +61,39 @@ class ProductManagerMongo {
             const respuesta = {
                 status: 'success',
                 payload: docs,
-                totalPages,
-                prevPage,
-                nextPage,
-                hasPrevPage,
-                hasNextPage,
-                prevLink,
-                nextLink,
-                totalDocs,
+                totalPages: totalPages,
+                prevPage: prevPage,
+                nextPage: nextPage,
+                hasPrevPage: hasPrevPage,
+                hasNextPage: hasNextPage,
+                prevLink: prevLink,
+                nextLink: nextLink,
+                totalDocs: totalDocs,
                 success: true
             }
+
             return respuesta
 
         } catch (error) {
-            return new Error(error)
+            throw error
         }
     }
 //--------------GET PRODUCT BY ID-------------
     async getById(id){
         try {
-            return await productModel.findById(id)
+            const objectId = ObjectId.isValid(id) ? new ObjectId(id) : null
+            const product = await productModel.findById(objectId)
+            if(!product){
+                CustomError.createError({
+                    name: 'Product Not Found',
+                    cause: findProductErrorInfo(id),
+                    message: 'There is no product with this id',
+                    code: EError.NOT_FOUND
+                })
+            }
+            return product
         } catch (error) {
-            return new Error(error)
+            throw error
         }
     }
 
@@ -81,11 +107,12 @@ class ProductManagerMongo {
             !product.hasOwnProperty('price') ||
             !product.hasOwnProperty('stock') ||
             !product.hasOwnProperty('category')) {
-            const respuesta = {
-                status: 'error',
-                message: 'El producto no tiene todas las propiedades requeridas',
-                success: false};
-            return respuesta
+                CustomError.createError({
+                    name: 'Product creation error',
+                    cause: createProductErrorInfo(product),
+                    message: 'There is an issue with the properties',
+                    code: EError.INVALID_TYPE_ERROR,
+                })
             }
             // Validamos el tipo de cada propiedad
             if (typeof product.title !== 'string' ||
@@ -96,43 +123,69 @@ class ProductManagerMongo {
             typeof product.category !== 'string'
             //||!Array.isArray(product.thumbnails)
             ) {
-            const respuesta = {
-            status: 'error',
-            message: 'El producto tiene una o más propiedades con un tipo incorrecto',
-            succes:false}
-            return respuesta
+                CustomError.createError({
+                    name: 'Product creation error',
+                    cause: createProductErrorInfo(product),
+                    message: 'There is an issue with the type of the properties',
+                    code: EError.INVALID_TYPE_ERROR,
+                })
             }
             //Validamos que el producto no exista
             if (await productModel.exists({code: product.code})) {
-            const respuesta = {
-                status: 'error',
-                message: 'Ya se ha ingresado un producto con ese código',
-                success: false};
-            return respuesta
+                CustomError.createError({
+                    name: 'Product creation error',
+                    cause: productExistErrorInfo(product),
+                    message: 'There is a product with this code',
+                    code: EError.CONFLICT,
+                })
             }
-            this.events.emit('addProduct', product).setMaxListeners()
+            this.events.emit('addProduct', product)
             return await productModel.create(product)
         } catch (error) {
-            return new Error(error)
+            throw error
         }
     }
 //-------------UPDATE PRODUCT-------------
     async  update(id, product){
         try {
-            return await productModel.findOneAndUpdate({_id: id}, product)
+            const objectId = ObjectId.isValid(id) ? new ObjectId(id) : null
+            const productUpdated = await productModel.findOneAndUpdate({_id: objectId}, product)
+            console.log('productUpdated', productUpdated)
+            if(!productUpdated){
+                CustomError.createError({
+                    name: 'Update product error',
+                    cause: productUpdateErrorInfo(id, product),
+                    message: 'Cant update product',
+                    code: EError.NOT_FOUND
+                })
+            }
+            return productUpdated
         }catch (error) {
-            return new Error(error)
+            throw error
         }
     }
 
 //-------------DELETE PRODUCT-------------
     async delete(id){
         try {
-            deletedProduct = await productModel.findOneAndDelete({_id: id})
-            this.events.emit('deleteProduct', id).setMaxListeners()
+            const objectId = ObjectId.isValid(id) ? new ObjectId(id) : null
+            const deletedProduct = await productModel.findOneAndDelete({_id: objectId})
+            if(!deletedProduct){
+                CustomError.createError({
+                    name: 'Delete product error',
+                    cause: findProductErrorInfo(id),
+                    message: 'Cant delete product',
+                    code: EError.NOT_FOUND
+                })
+            }
+            this.events.emit('deletedProduct', id)
             return deletedProduct
         }catch (error) {
-            return new Error(error)
+            console.error(error.name)
+            console.error(error.message)
+            console.error(error.code)
+            console.error(error.cause)
+            throw error
         }
     }
 

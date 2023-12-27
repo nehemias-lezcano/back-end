@@ -1,16 +1,27 @@
 const { validationResult } = require('express-validator');
-const { productsService } = require('../service/')
+const { productsService } = require('../service/index');
+const CustomError = require('../utils/CustomError/CustomError');
+const { getProductsErrorInfo, findProductErrorInfo, createProductErrorInfo, productUpdateErrorInfo, productdeleteErrorInfo } = require('../utils/CustomError/info');
+const { EError } = require('../utils/CustomError/EErrors');
+const { logger } = require('../config/logger');
+
+
 
 
 class ProductController {
     
     
-    getAll = async (req,res)=>{
+    getAll = async (req,res,next)=>{
         try{
             const errors = validationResult(req);
             //Si hay errores, devuelve un error 400 con los errores
             if (!errors.isEmpty()) {
-                return res.status(400).send({message: 'Error en los parametros de entrada', errors});
+                CustomError.createError({
+                    name: 'Input parameters Error',
+                    cause: getProductsErrorInfo(),
+                    message: 'There is an error in the input parameters',
+                    code: EError.INVALID_TYPE_ERROR
+                })
             }
             
             //Si no hay errores, se ejecuta la consulta
@@ -20,6 +31,7 @@ class ProductController {
             if(category) {
                 filter.category = category
             }
+            
             if(availability) {
                 filter.status = availability
             }
@@ -32,74 +44,103 @@ class ProductController {
             if(priceSort==='desc'){
                 sort = {price: -1}
             }
-            //Se ejecuta la consulta
+
+            
             const productList = await productsService.getAll(limit, page, sort, filter)
-            //Si devuelve falso, hay algón problema con la consulta
-            if(!productList) return res.status(404).send('No se encuentran productos en la base de datos')
+            console.log('list',productList)
+            
+            //Si devuelve falso, hay algún problema con la consulta
+            if(!productList) {
+                CustomError.createError({
+                    name: 'Products not found',
+                    cause: getProductsErrorInfo(),
+                    message: 'There is no products found',
+                    code: EError.NOT_FOUND
+                })
+            }
             //Si devuelve verdadero, Se envía el producto encontrado como respuesta al cliente
-            res.status(200).send (productList)  
+            res.status(200).send(productList)  
     
         } catch(error){
-            res.status(400).send({status:'Router error', error})
+            next(error)
         }
     }
 
-    getById = async (req,res)=>{
+    getById = async (req,res,next)=>{
         try{
             const {pid} = req.params
             const productList = await productsService.getById(pid)
             //Si devuelve falso, hay algón problema con el Id
-            if(!productList) return res.status(404).send('Error: no se encuentra ese Id')
+            if(!productList) {
+                CustomError.createError({
+                    name: 'Product not found',
+                    cause: findProductErrorInfo(pid),
+                    message: 'There is no product found with this id',
+                    code: EError.NOT_FOUND
+                })
+            }
             //Si devuelve verdadero, se ha encontrado el producto
-            res.status(200).send ({status:'success', payload:productList})
+            logger.info('Product found')
+            res.status(200).send (productList)
             
         } catch(error){
-            res.status(400).send({status:'Router error', error})
+            next(error)
         }
     }
 
-    create = async (req, res)=> {
+    create = async (req, res, next)=> {
         try{
             const toAddProduct = req.body
-            
-            const respuesta = await productsService.create(toAddProduct)
+            const user = req.user
+            if(user.role === 'premium') {
+                toAddProduct.owner = user._id
+            }
+            const productAdded = await productsService.create(toAddProduct)
             
             //Si devuelve falso, hay algún problema con el producto
-            if(!respuesta.success) {return res.status(400).send(respuesta)}
-    
+            if(!productAdded) {
+                CustomError.createError({
+                    name: 'Product not created',
+                    cause: createProductErrorInfo(toAddProduct),
+                    message: 'There is an error creating the product',
+                    code: EError.INVALID_TYPE_ERROR
+                })
+            }
             //Si devuelve verdadero, se ha creado el nuevo producto
-            res.status(200).send(respuesta)
+            logger.info('Product created')
+            res.status(200).send(productAdded)
     
         } catch (error) {
-            res.status(400).send({status:'Router error', error})
+            next(error)
         }
     
     }
 
-    update = async (req , res)=>{
-        const {pid} = req.params
-        const toChangeProduct = req.body
-    
-        const updatedProduct = await productsService.update(pid, toChangeProduct)
-    
-        //Sí devuelve falso, hay algún problema con la actualización
-        if(!updatedProduct.success) {
-            return res.status(400).send(updatedProduct)
+    update = async (req , res, next)=>{
+        try {           
+            const {pid} = req.params
+            const toChangeProduct = req.body
+        
+            const updatedProduct = await productsService.update(pid, toChangeProduct)
+            //Si devuelve verdadero, quiere decir que se hizo la actualización
+            logger.info('Product updated')
+            res.status(200).send(updatedProduct)
+        } catch (error) {
+            next(error)
         }
-        //Si devuelve verdadero, quiere decir que se hizo la actualización
-        res.status(200).send(updatedProduct)
     
     }
 
-    delete = async (req,res)=>{
-        const {pid} = req.params
-        const deletedProduct = await productsService.delete(pid)
-        //Sí devuelve falso, hay algún problema con el borrado
-        if(!deletedProduct.success){
-            return res.status(400).send(deletedProduct)
+    deleteProduct = async (req,res,next)=>{
+        try {
+            const {pid} = req.params
+            const deletedProduct = await productsService.delete(pid)
+            //Si devuelve verdadero, quiere decir que se borró el producto
+            logger.info('Product deleted')
+            res.status(200).send(deletedProduct) 
+        } catch (error) {
+            next (error)
         }
-        //Si devuelve verdadero, quiere decir que se borró el producto
-        res.status(200).send(deletedProduct)
     }
 
 }

@@ -6,7 +6,7 @@ const { Strategy, ExtractJwt } = require('passport-jwt')
 const { userModel } = require('../DAO/db/models/user.model')
 const { createHash, isValidPassword } = require('../utils/bcryptHash')
 const { privateKey } = require('../config/configServer')
-const { usersService, cartsService } = require('../service/index')
+const { usersService, cartsService } = require('../service/index');
 const localStrategy = local.Strategy
 
 //Inicializamos passport-Jwt
@@ -60,7 +60,7 @@ const initPassportGithub = () => {
                                     role:'admin'}
                         return done(null, user)
                     }
-                    let user = await usersService.findUserByEmail (username)
+                    let user = await usersService.getUserByEmail (username)
                     if(!user) return done(null, false, {message: 'Usuario no encontrado'})
                     
                     if (!isValidPassword(password, user.password)) 
@@ -125,8 +125,6 @@ const initPassportGithub = () => {
         
         try {
             let user = await usersService.findUserByEmail(profile._json.email)
-
-            console.log(profile)
             if (!user) {
                 let newUser = {
                     first_name: profile._json.name,
@@ -142,7 +140,7 @@ const initPassportGithub = () => {
             }
             return done (null, user)
         } catch (error) {
-            return done('Error al obtener el usuario'+error)
+            throw error
         }
             }
         )

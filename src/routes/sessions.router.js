@@ -1,11 +1,10 @@
-const { Router } = require('express');
-const { login, register, gitHubCallBack, logout, failLogin, failRegister, toUser } = require ('../controllers/sessions.controller')
-const passport = require('passport');
+const { Router } = require('express')
+const { login, register, gitHubCallBack, logout, failLogin, failRegister, toUser, forgotPassword, resetPassword } = require ('../controllers/sessions.controller')
+const passport = require('passport')
 const { passportAuth } = require('../config/passport.JWT/passport.auth')
-const { authorization,
-} = require('../config/passport.JWT/passport.authorization')
-const UserDTO = require('../DTO/user.dto')
-const router = Router();
+const { authorization } = require('../config/passport.JWT/passport.authorization')
+const router = Router()
+
 
 
 
@@ -64,6 +63,13 @@ router.get(
     gitHubCallBack,
 )
 
+//------Forgot password-------
+
+router.post('/forgot-password', forgotPassword)
+
+//------Reset password-------
+
+router.post('/reset-password/:token',  resetPassword)
 
 
 module.exports = router
