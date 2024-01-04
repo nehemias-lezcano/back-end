@@ -1,25 +1,41 @@
-const {cartsManagerMongo} = require('../DAO/db/carts.Manager.Mongo')
-const ProductsManagerMongo = require('../DAO/db/products.Manager.Mongo')	
-const { TicketsManagerMongo } = require('../DAO/db/tickets.Manager.Mongo')
-const { UsersManagerMongo } = require('../DAO/db/users.Manager.Mongo')
-const CartRepository = require('../repositories/carts.repository')
-const ProductRepository = require('../repositories/products.repository')
-const TicketRepository = require('../repositories/tickets.repository')
-const UserRepository = require('../repositories/users.repository')
+import config from '../config/configServer.js'
+import ProductDaoMongo from '../dao/mongo/product.mongo.js'
+import { ContactDao,
+         UserDao, 
+         ProductDao
+    } 
+     from '../dao/factory.js';
+
+import ContactRepository  from '../repositories/contacts.repositories.js'
+
+const productService = new ProductDao();
+const userService = new UserDao();
+const contactService = new ContactRepository(ContactDao);
 
 
-const cartsService =new CartRepository(new cartsManagerMongo())
-
-const productsService = new ProductRepository(new ProductsManagerMongo())
-
-const usersService = new UserRepository(new UsersManagerMongo())
-
-const ticketsService = new TicketRepository(new TicketsManagerMongo())
 
 
-module.exports = {
-    cartsService,
-    productsService,
-    usersService,
-    ticketsService,
-}
+export default {
+    productService,
+    userService,
+    contactService
+};
+
+
+ 
+
+
+
+/* //traer instacia de los daos
+ import UserDaoMongo from "../dao/mongo/user.mongo.js"
+import ProductDaoMongo from "../dao/mongo/product.mongo.js"
+import ProductDaoMemory from "../dao/memory/product.memory.js"
+
+const userService = new UserDaoMongo()
+const productService = new ProductDaoMongo()
+//const productService = new ProductDaoMemory()
+
+
+
+export default {productService,userService} 
+ */

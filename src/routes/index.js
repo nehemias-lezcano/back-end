@@ -1,35 +1,41 @@
-const { Router } = require('express');
-const productsRouter = require('./products.router')
-const viewsRouter = require('./views.router')
-const cartsRouter = require('./carts.router')
-const uploadsRouter = require('./uploads.router')
-const sessionsRouter = require('./sessions.router')
-const mockingProductsRouter = require('./mockingProducts.router')
-const loggerTestRouter = require('./loggerTest.router')
+import { Router } from 'express'
+const router = Router()
+// import { viewsRouter } from './views.router'
 
-const router = Router();
+import productRouter from './products.router.js'
+import routerCar from './carts.router.js'
+import usersRouter from './users.router.js'
+import sessionsRouter from './session.router.js'
+import pruebasRouter  from '../routes/pruebas.router.js'
+import uploader from '../utils/multer.utils.js'
+import contactsRouter from '../routes/contacts.router.js'
+// //router de carrito
 
-// http://localhost:8080
-router.use('/', viewsRouter)
+router.use('/session',sessionsRouter)
 
-// http://localhost:8080/api/products
-router.use('/api/products', productsRouter)
+router.use('/pruebas', pruebasRouter)
+router.use ('/api/contacts', contactsRouter )
+router.use('/api/carts', routerCar)
 
-// httP://localhost:8080/api/carts
-router.use('/api/carts', cartsRouter)
+router.use('/api/products', productRouter)
 
-// http://localhost:8080/api/sessions
-router.use('/api/sessions', sessionsRouter)
+router.use('/api/usuarios', usersRouter)
 
-// http://localhost:8080/uploads
-router.use('/uploads', uploadsRouter)
-
-// http://localhost:8080/mockingproducts
-router.use('/mockingproducts', mockingProductsRouter)
-
-// http://localhost:8080/logger-test
-router.use('/logger-test', loggerTestRouter )
+router.post('/upload', uploader.single('myFile'),(req,res)=>{
+    res.send({
+        status:'success',
+        mensaje:'Archivo subido con exito'
+    })
+}) 
 
 
-
-module.exports = router
+// router.use('/',(req,res)=>{
+    //     res.send('Hola mundo')
+    // })
+    
+    
+    // router.use('/', viewsRouter)
+    // router.use('/register', viewsRouter)
+    // app.use('/chat', viewsRouter)
+    // //router de productos
+    export default router

@@ -1,0 +1,434 @@
+[
+  {
+    "title": "Mermelada de durazno",
+    "description": "Con azucar mascabo",
+    "price": 250,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "A111",
+    "stock": 25
+    
+  },
+  {
+    "title": "Mermelada de ciruela",
+    "description": "Con ciruelas amarillas",
+    "price": 300,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "A112",
+    "stock": 25
+   
+  },
+  {
+    "title": "Mermelada de damasco",
+    "description": "Con jenjibre",
+    "price": 350,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "A113",
+    "stock": 25
+    
+  },
+  {
+    "title": "Mermelada de higos",
+    "description": "De higos negros",
+    "price": 350,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "A114",
+    "stock": 25
+    
+  },
+  {
+    "title": "Mermelada de tomates",
+    "description": "De tomates perita",
+    "price": 300,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "A115",
+    "stock": 25
+   
+  },
+  {
+    "title": "Higos en almibar",
+    "description": "Con pedacitros de nuez",
+    "price": 550,
+    "status": true,
+    "category": "Conserva",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "B111",
+    "stock": 15
+    
+  },
+  {
+    "title": "Duraznos en almibar",
+    "description": "Con canela",
+    "price": 450,
+    "status": true,
+    "category": "Conserva",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "B112",
+    "stock": 15
+  
+  },
+  {
+    "title": "Peras en almibar ",
+    "description": "Con almibar de limon",
+    "price": 450,
+    "status": true,
+    "category": "Conserva",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "B113",
+    "stock": 15
+    
+  },
+  {
+    "title": "Dulce de membrillo",
+    "description": "Barra de dulce de membrillo",
+    "price": 650,
+    "status": true,
+    "category": "Dulce en barra",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "C111",
+    "stock": 10
+    
+  },
+  {
+    "title": "Dulce de batata",
+    "description": "Barra de dulce de batata",
+    "price": 650,
+    "status": true,
+    "category": "Dulce en barra",
+    "thumbnails": [
+      "Sin imagen"
+    ],
+    "code": "C112",
+    "stock": 10
+    
+  },
+  {
+    "title": "Mermelada de frambuesa",
+    "description": "Con semillas",
+    "price": 650,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "C116",
+    "stock": 10
+    
+  },
+  {
+    "title": "Jalea de manzana",
+    "description": "Con manzanas rojas",
+    "price": 650,
+    "status": true,
+    "category": "Jalea",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "D111",
+    "stock": 10
+   
+  },
+  {
+    "title": "Jalea de manzana",
+    "description": "Con manzanas verdes",
+    "price": 650,
+    "status": true,
+    "category": "Jalea",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "D112",
+    "stock": 10
+    
+  },
+  {
+    "title": "Dulce de batata con chocolate",
+    "description": "Barra de dulce de batata con cacao",
+    "price": 850,
+    "status": true,
+    "category": "Dulce en barra",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "C113",
+    "stock": 10
+  
+  },
+  {
+    "title": "Mermelada de frutos rojos",
+    "description": "Con frutillas y moras",
+    "price": 650,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "A117",
+    "stock": 10
+    
+  },
+  {
+    "title": "Dulce de membrilllo con nuez",
+    "description": "Con nueces de pecan",
+    "price": 650,
+    "status": true,
+    "category": "Dulces en barra",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "C114",
+    "stock": 10
+    
+  },
+  {
+    "title": "Mermelada inglesa",
+    "description": "Naranja, manzana y pomelo",
+    "price": 750,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "A118",
+    "stock": 10
+   
+  },
+  {
+    "title": "Conserva de limón",
+    "description": "Con gajos de limón a vivo",
+    "price": 950,
+    "status": true,
+    "category": "Conserva",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "B114",
+    "stock": 10
+  
+  },
+  {
+    "title": "Frutillas en almibar",
+    "description": "Almibar de limón",
+    "price": 1050,
+    "status": true,
+    "category": "Conserva",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "B115",
+    "stock": 10
+   
+  },
+  {
+    "title": "Mermelada Light de durazno",
+    "description": "Con stevia",
+    "price": 850,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "E111",
+    "stock": 10
+    
+  },
+  {
+    "title": "Mermelada light de frambuesa",
+    "description": "Con stevia",
+    "price": 1150,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "E112",
+    "stock": 10
+    
+  },
+  {
+    "title": "Mermelada light de higos",
+    "description": "Con stevia",
+    "price": 950,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "E113",
+    "stock": 10
+  
+  },
+  {
+    "title": "Arandanos en almibar",
+    "description": "Enteros",
+    "price": 1150,
+    "status": true,
+    "category": "Conserva",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "B115",
+    "stock": 10
+    
+  },
+  {
+    "title": "Mermelada de arandanos",
+    "description": "Con trozos",
+    "price": 1250,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "A119",
+    "stock": 10
+    
+  },
+  {
+    "title": "Jalea de Naranja",
+    "description": "Con cascaritas",
+    "price": 1250,
+    "status": true,
+    "category": "Jalea",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "D113",
+    "stock": 10
+    
+  },
+  {
+    "title": "Jalea de membrillo",
+    "description": "Con azúcar mascabo",
+    "price": 1250,
+    "status": true,
+    "category": "Jalea",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "D114",
+    "stock": 10
+    
+  },
+  {
+    "title": "Mermelada de melón",
+    "description": "De melón escrito",
+    "price": 1350,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "A120",
+    "stock": 10
+    
+  },
+  {
+    "title": "Mermelada de Cerezas",
+    "description": "Con trozos",
+    "price": 1350,
+    "status": true,
+    "category": "Mermelada",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "A121",
+    "stock": 10
+    
+  },
+  {
+    "title": "Cerezas en almibar",
+    "description": "Enteras sin carozo",
+    "price": 1250,
+    "status": true,
+    "category": "Conserva",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "B116",
+    "stock": 10
+    
+  },
+  {
+    "title": "Uvas en almibar",
+    "description": "Verdes sin semilla",
+    "price": 1250,
+    "status": true,
+    "category": "Conserva",
+    "thumbnails": [
+      [
+        "Sin imagen"
+      ]
+    ],
+    "code": "B117",
+    "stock": 10
+    
+  }
+
+
+]

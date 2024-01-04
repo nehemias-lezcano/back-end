@@ -1,0 +1,166 @@
+// productos
+
+### GET 
+GET http://localhost:8080/api/products
+Content-Type: application/json
+### GET 
+       
+GET http://localhost:8080/api/products/6460df995ccbf883599ed474
+### POST 
+POST http://localhost:8080/api/products
+Content-Type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImZpcnN0X25hbWUiOiJwZWRybyIsImxhc3RfbmFtZSI6ImNhbXBvIiwiZW1haWwiOiJwZWRyb0BnbWFpbC5jb20ifSwiaWF0IjoxNjg1NTU5NTgzLCJleHAiOjE2ODU2NDU5ODN9.KK2A-7g3oXQQBjZGqoWRtNUDgwQtsy8ZipnTP3SFOZ4
+ 
+
+
+### PUT 
+       
+PUT http://localhost:8080/api/products/645e6722d08dac4c5a5597f2
+
+       {
+              "title": "Mermelada de tomates",
+              "description": "Con tomate perita sin piel",
+              "thumbnail":"Sin imagen",
+              "price":550,
+              "stock":25,
+              "code":"010",
+              "status":true,
+              "category":"Mermelada"
+       }  
+
+
+       
+   
+###
+DELETE http://localhost:8080/api/products/645631a1d72288160fb66c89
+
+
+
+
+
+// usuarios
+
+### GET 
+GET http://localhost:8080/api/usuarios
+
+### post
+POST  http://localhost:8080/api/usuarios
+Content-Type: application/json
+
+{
+    "nombre": "Maria",
+    "apellido": "Fernandez",
+    "email":"mf@gmail.com"
+}
+
+
+###PUT  
+PUT  http://localhost:8080/api/usuarios/645a91878aa172e22205c3f6
+Content-Type: application/json
+
+{
+    "nombre": "Maria Jose",
+    "apellido": "Fernandez",
+    "email":"mjf@gmail.com"
+}
+
+### DELETE
+DELETE http://localhost:8080/api/usuarios/645a91878aa172e22205c3f6
+
+
+### CARRITO
+
+GET http://localhost:8080/api/carts
+
+###CARRITO BY ID
+
+
+GET http://localhost:8080/api/carts/645e1a5a70def041a8617864
+
+
+###
+PUT  http://localhost:8080/api/carts/645e15e28d5293ac0886da47
+Content-Type: application/json
+
+ {
+           "quantity":0,
+            
+}
+
+###
+PUT http://localhost:8080/api/carts/cid/products/pid
+Content-Type: application/json
+
+ {
+           "products":[
+            {
+              "quantity":8,
+              "_id":"645e14518d5293ac0886da45"
+            },
+           {
+                "quantity":4 ,
+               "_id":"645e6700d08dac4c5a5597f0"
+           }
+        ]
+}
+
+
+
+### DELETE
+DELETE http://localhost:8080/api/carts/645e6824d08dac4c5a5597fb
+
+
+
+//pruebas
+###
+POST http://localhost:8080/api/session/register HTTP/1.1
+Content-Type: application/json
+
+{
+       "first_name":"anita",
+       "last_name":"ece",
+       "email":"ani123456@gmail.com",
+       "password":"ani1234567"
+}
+
+
+###
+POST http://localhost:8080/api/session/login HTTP/1.1
+Content-Type: application/json
+
+{
+      "email":"ani123456@gmail.com",
+       "password":"ani1234567"
+}
+
+###
+GET http://localhost:8080/api/session/current HTTP/1.1
+
+
+###
+GET http://localhost:8080/pruebas/params/dddkkgvkAA HTTP/1.1
+
+###
+GET http://localhost:8080/api/usuarios
+
+
+###
+POST http://localhost:8080/sessions/login
+
+{
+       
+       "email":"lu@gmail.com",
+       "password":"lu123"
+}
+###
+POST http://localhost:8080/sessions/register
+   
+{
+       "first_name":"ana11",
+       "last_name":"eceiza1",
+       "email":"ana11@gmail.com",
+       "password":"ana11123"
+}
+
+###
+GET  http://localhost:8080/sessions/current

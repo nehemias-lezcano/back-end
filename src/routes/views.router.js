@@ -1,85 +1,115 @@
-const { Router } = require('express')
-const { query } = require('express-validator');
-const { passportAuth } = require('../config/passport.JWT/passport.auth')
-const { showProducts, showCart, showRealTime, showChat, showLogin, showRegister, showForgotPassword, showResetPassword } = require('../controllers/views.controller');
-const { authorization } = require('../config/passport.JWT/passport.authorization');
-
-
-
+import { Router } from "express";
 const router = Router()
 
 
+router.get('/login',(req,res) => {
+    res.render('login', {
+        style:'index.css'
+    })
+})
+
+router.get('/register',(req,res) =>{
+    res.render('registerForm',{
+        style:'index.css'
+    })
+})
 
 
-//GET
-//Vista Products
-router.get(
-    '/products',
-    [
-    query('limit')
-        .optional()
-        .isInt()
-        .toInt()
-        .isInt({ min: 1 })
-        .isInt({ max: 100 }),
-    query('page')
-        .optional()
-        .isInt()
-        .toInt()
-        .isInt({ min: 1 })
-        .isInt({ max: 100 }),
-    query('priceSort')
-        .optional()
-        .isIn(['asc', 'desc']),
-    query('category').optional(),
-    query('availability').optional()
-    ],
-    passportAuth('jwt', {session: false}),
-    showProducts)
+let food =[
+    {name:'Hamburguesa', price:150},
+    {name:'Pizza', price:250},
+    {name:'Papas fritas', price:100},
+    {name:'Pancho', price:130},
+    {name:'Lomito', price:250},
+];
 
-//Vista Cart
-router.get(
-    '/carts/:cid',
-    passportAuth('jwt', { session: false }),
-    showCart)
+const users = [
+    {
+        nombre:'Ana',
+        apellido:'Ramirez',
+        edad:35,
+        correo:'anar@gmail.com',
+        telefono:'555-3456',
+        role:'user'
+    },
+    {
+        nombre:'Miguel',
+        apellido:'Fernandez',
+        edad:45,
+        correo:'migue@gmail.com',
+        telefono:'258-9631',
+        role:'admin'
+    },
+    {
+        nombre:'Pedro',
+        apellido:'Perez',
+        edad:38,
+        correo:'pp@gmail.com',
+        telefono:'258-7896',
+        role:'user'
+    },
+    {
+        nombre:'Carlos',
+        apellido:'Benitez',
+        edad:55,
+        correo:'charli@gmail.com',
+        telefono:'444-7788',
+        role:'admin'
+    },
+    {
+        nombre:'Mirta',
+        apellido:'Sanchez',
+        edad:65,
+        correo:'mirta@gmail.com',
+        telefono:'444-6644',
+        role:'user'
+    }
+];
 
-//Vista realTimeProducts
-router.get(
-    '/realtimeproducts',
-    passportAuth('jwt', { session: false }),
-    showRealTime)
+router.get('/', (req, res)=>{
+    let user = users[Math.floor( Math.random() * users.length )]
 
-//Vista chat
-router.get(
-    '/chat',
-    passportAuth('jwt', { session: false }),
-    authorization('user'),
-    showChat)
-    
+    let testUser = {
+        title: 'ecommerce',
+        user,
+        isAdmin: user.role == 'admin',
+       food,
+       style:'index.css'
+    }
 
-//Vista login
-router.get(
-    '/', 
-    showLogin)
+     res.render('index', testUser)
+ })
+ 
 
-//Vista register
-router.get(
-    '/register',
-    showRegister)
 
-//Vista forgotPassword
-router.get(
-    '/forgotPassword',
-    showForgotPassword)
 
-//Vista resetPassword
-router.get(
-    '/resetPassword/:token',
-    showResetPassword)
 
-//Vista profile
-router.get(
-    '/profile',
-    passportAuth('jwt', { session: false }))
+ router.get('chat',(req,res)=>{
+       res.render('layouts/chat',{})
+}) 
+ 
+router.get('/realtimeprod' , (req, res) =>{
+    res.render('layouts/realtimeprod',{})
+})
 
-module.exports = router;
+
+
+router.get('/register' , (req, res) =>{
+    res.render('registerForm',{
+        style:'index.css'
+    })
+})
+
+
+router.post('/register',(req,res) =>{
+    const {name, email, password} = req.body
+    res.send({
+        name,
+        email, 
+        password,
+        mensaje:"Se registro con éxito"
+    })
+})
+
+
+export default router
